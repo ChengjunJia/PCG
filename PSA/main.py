@@ -116,7 +116,28 @@ def init():
             resMap[filename] = ruleRes
     np.save("res.npy", resMap)
 
+def getRuleSetResult():
+    ruleName = "fw1_10k_CutSplit"
+    fn = os.path.join(".", ruleName)
+    res = analyzeRuleset(fn)
+    with open( os.path.join(".", ruleName+".mark"), "w" ) as f:
+        y = res
+        for markItem in y:
+            f.write("{mk}\n".format(mk=markItem))
+
 if __name__ == "__main__":
-    init()
+    global logger
+    if 'logger' not in locals().keys() or logger != logging.getLogger('logger'):
+        logger = logging.getLogger('logger')
+        logger.setLevel(logging.DEBUG)
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.INFO)
+    
+        formatter = logging.Formatter('%(asctime)s %(levelname)s:  %(message)s')
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
+
+    # init()
+    getRuleSetResult()
 
 # filename = './pc_plat-master/rule_trace/rules/origin/fw1_5K'
