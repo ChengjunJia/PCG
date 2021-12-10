@@ -60,6 +60,31 @@ def getRuleMat(filename):
     logger.info("The time runs for {total_time}s".format(total_time=end-start))
     return result
 
+
+def getRuleMatOnDim(filename, dims=[0,1,2,3,4]):
+    global logger
+    rs = pc.load_rules(filename)
+    start = time.time()
+    logger.info("="*50)
+    # Convert rules into the policyspace
+    rsPolicySpaceList = []
+    for r in rs:
+        cur_rule = PolicySpace([HyperRect(deepcopy(r[:5]))])
+        rsPolicySpaceList.append(cur_rule)
+    ruleNum = len(rsPolicySpaceList)
+    logger.info("Finish the PolicySpace Convert.")
+    # init the matrix
+    result = np.matlib.eye(n=ruleNum, dtype=int)
+    for i in range(1, ruleNum):
+        curRule = rsPolicySpaceList[i]
+        for j in range(0, i):
+            cmpRule = rsPolicySpaceList[j]
+            if curRule.is_overlap(cmpRule, dims):
+                result[i,j] = result[j,i] = 1
+    end = time.time()
+    logger.info("The time runs for {total_time}s".format(total_time=end-start))
+    return result
+
 # %% Run
 ruleRootPath = os.path.join(".", "rules")
 g = os.walk(ruleRootPath)
@@ -69,12 +94,7 @@ for path, dir_list, file_list in g:
         filePath = os.path.join(ruleRootPath, filename)
 # print(filePath)
 
-acl1Mat=getRuleMat(os.path.join('.','rules','acl1'))
-print("We have total edges: {edgenum:0.0f} with size: {MatSize}".format(edgenum=(acl1Mat.sum()-753)/2, MatSize=acl1Mat.shape))
-
-im = Image.fromarray(np.uint8(acl1Mat * 255))
-im.show()
-
+# %% Get the All fields
 for rulename in ['acl1_1K', 'fw1_1K', 'ipc1_1K']:
     mat = getRuleMat(os.path.join('.','rules', rulename))
     print("We have total edges: {edgenum:0.0f} with size: {MatSize}".format(edgenum=(mat.sum()-753)/2, MatSize=mat.shape))
@@ -82,6 +102,16 @@ for rulename in ['acl1_1K', 'fw1_1K', 'ipc1_1K']:
     im.save(rulename+".png")
     im.show()
 
+# %% Get the Specified fields
+for rulename in ['acl1_1K', 'fw1_1K', 'ipc1_1K']:
+    mat = getRuleMatOnDim(os.path.join('.','rules', rulename), [0,1,4])
+    print("We have total edges: {edgenum:0.0f} with size: {MatSize}".format(edgenum=(mat.sum()-753)/2, MatSize=mat.shape))
+    im = Image.fromarray(np.uint8(mat * 255))
+    im.save(rulename+"_srcIP_dstIP_proto.png")
+    im.show()
+
+
+# %%
 
 if False:
     # Graph 分析
@@ -90,7 +120,7 @@ if False:
     im2 = Image.fromarray(np.uint8(fw1 * 255))
     im2.show()
     
-    G = nx.from_numpy_matrix(acl1Mat) # acl1Mat[0:-4, 0:-4]
+    G = nx.from_numpy_matrix(mat) # acl1Mat[0:-4, 0:-4]
     type(G)
     
     # acl1Mat[752,:]

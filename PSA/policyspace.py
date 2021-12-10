@@ -59,6 +59,16 @@ class HyperRect(object):
                 return []
             dims.append([max(sd[0], vd[0]), min(sd[1], vd[1])])
         return [HyperRect(dims)]
+    
+    # intersect for each field
+    def and_dim_with(self, value):
+        dims = []
+        for sd, vd in zip(self.dims, value.dims):
+            if sd[0] > vd[1] or sd[1] < vd[0]:
+                dims.append(0)
+            else:
+                dims.append(1)
+        return dims
 
     # subtract
     def __sub__(self, value):
@@ -139,6 +149,17 @@ class PolicySpace(object):
         rects = list(chain.from_iterable(vr.__and__(sr)
             for vr in value.rects for sr in self.rects))
         return PolicySpace(rects) if rects else None
+    
+    # intersect on the specified dims
+    def is_overlap(self, value, specified_dim):
+        assert( len(value.rects) == 1 )
+        assert( len(self.rects) == 1 )
+        res = value.rects[0].and_dim_with( self.rects[0] )
+        for d in specified_dim:
+            if res[d] == 0:
+                # Any dim is not overlap --> they are not overlapped
+                return False
+        return True
 
     # subtract
     def __sub__(self, value):
