@@ -11,13 +11,23 @@
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import os
+
 
 def main():
     res = np.load("./res.npy", allow_pickle=True).item()
     print("All items are {key}".format( key = res.keys() ) )
-    y = getDensity(res['fw1_5K'], 10)
-    fig, ax = plt.subplots()
-    ax.plot(y)
+    # y = getDensity(res['fw1_5K'], 10)
+    # fig, ax = plt.subplots()
+    # ax.plot(y)
+
+    # Output the result 
+    # ruleName = "fw1_10K"
+    for ruleName in res.keys():
+        with open( os.path.join(".", ruleName+".mark"), "w" ) as f:
+            y = res[ruleName]
+            for markItem in y:
+                f.write("{mk}\n".format(mk=markItem))
 
 
 def getDensity(x, sampleLen):
@@ -29,6 +39,7 @@ def getDensity(x, sampleLen):
     assert(sampleLen < xNum)
     res = np.convolve(np.array(x),  np.ones(sampleLen, dtype=int), 'same')
     return res
+
 
 if __name__ == '__main__':
     main()

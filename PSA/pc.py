@@ -71,11 +71,11 @@ def range2prefix(rng, bits):
 # [[sip_begin, sip_end], ..., [proto_begin, proto_end], [pri]]
 def load_rules(s_rule_file):
     rule_set = []
-    rule_fmt = re.compile(r'^@(\d+).(\d+).(\d+).(\d+)/(\d+) '
-            r'(\d+).(\d+).(\d+).(\d+)/(\d+) '
-            r'(\d+) : (\d+) '
-            r'(\d+) : (\d+) '
-            r'(0x[\da-fA-F]+)/(0x[\da-fA-F]+)$')
+    rule_fmt = re.compile(r'^@(\d+).(\d+).(\d+).(\d+)/(\d+)[\t ]*'
+            r'(\d+).(\d+).(\d+).(\d+)/(\d+)[\t ]*'
+            r'(\d+) : (\d+)[\t ]*'
+            r'(\d+) : (\d+)[\t ]*'
+            r'(0x[\da-fA-F]+)/(0x[\da-fA-F]+)[\t ]*$')
 
     for idx, line in enumerate(open(s_rule_file)):
         sip0, sip1, sip2, sip3, sip_mask_len, \

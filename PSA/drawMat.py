@@ -20,7 +20,7 @@ from PIL import Image
 import pc
 from policyspace import PolicySpace, HyperRect
 
-# %% init logger
+# init logger
 def initLogger():
     global logger
     if 'logger' not in locals().keys() or logger != logging.getLogger('logger'):
@@ -28,10 +28,16 @@ def initLogger():
         logger.setLevel(logging.DEBUG)
         ch = logging.StreamHandler()
         ch.setLevel(logging.INFO)
-    
+
         formatter = logging.Formatter('%(asctime)s %(levelname)s:  %(message)s')
         ch.setFormatter(formatter)
         logger.addHandler(ch)
+        
+        fh = logging.FileHandler('main.log')
+        fh.setLevel(logging.DEBUG)
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
+        
 initLogger()
 
 def getRuleMat(filename):
@@ -103,32 +109,42 @@ for rulename in ['acl1_1K', 'fw1_1K', 'ipc1_1K']:
     im.show()
 
 # %% Get the Specified fields
-for rulename in ['acl1_1K', 'fw1_1K', 'ipc1_1K']:
-    mat = getRuleMatOnDim(os.path.join('.','rules', rulename), [0,1,4])
+# for rulename in ['acl1_1K', 'fw1_1K', 'ipc1_1K']:
+for tup in [[0], [0,1], [0,1,4]]:
+    rulename = "fw1_10K"
+    mat = getRuleMatOnDim(os.path.join('.','rules', rulename), tup)
     print("We have total edges: {edgenum:0.0f} with size: {MatSize}".format(edgenum=(mat.sum()-753)/2, MatSize=mat.shape))
-    im = Image.fromarray(np.uint8(mat * 255))
-    im.save(rulename+"_srcIP_dstIP_proto.png")
-    im.show()
+    logger.info("We have total edges: {edgenum:0.0f} -> {newedge:0.0f}  with size: {MatSize} for the {rule} with {tup}".format(edgenum=(mat.sum()-mat.shape[0])/2, newedge=(mat.sum()-mat.shape[0])/2-mat.shape[0], MatSize=mat.shape, rule=rulename, tup =tup))
+    G = nx.from_numpy_matrix(mat) # acl1Mat[0:-4, 0:-4]
+    # acl1Mat[752,:]
+    degreeRes = nx.degree_histogram(G)
+
+    logger.info("density is {den:.2f}%".format(den =nx.density(G)*100) )
+    logger.info("degree is {deg}".format(deg=Counter(degreeRes)))
+    
+    color = nx.coloring.greedy_color(G, strategy="connected_sequential")
+    colRes = Counter(color.values())
+    logger.info( "size: {colorNum}/{colorSize} and list: {colorList}" .format( colorSize=colRes, colorNum = len(colRes), colorList = color ) )
+    logger.info("===================================")
+    # im = Image.fromarray(np.uint8(mat * 255))
+    # im.save(rulename+"_srcIP_dstIP_proto.png")
+    # im.show()
+    
 
 
 # %%
 
-if False:
-    # Graph 分析
-    fw1=getRuleMat(os.path.join('.','rules','fw1_10K'))
-    print("We have total edges: {edgenum:0.0f} with size: {MatSize}".format(edgenum=(fw1.sum()-753)/2, MatSize=fw1.shape))
-    im2 = Image.fromarray(np.uint8(fw1 * 255))
-    im2.show()
+for rulename in ['acl1_1K', 'fw1_1K', 'ipc1_1K', 'acl1_10K', 'fw1_10K', 'ipc1_10K']:
+    mat = getRuleMat(os.path.join('.','rules', rulename))
+    logger.info("We have total edges: {edgenum:0.0f} -> {newedge:0.0f}  with size: {MatSize} for the {rule}".format(edgenum=(mat.sum()-mat.shape[0])/2, newedge=(mat.sum()-mat.shape[0])/2-mat.shape[0], MatSize=mat.shape, rule=rulename))
     
     G = nx.from_numpy_matrix(mat) # acl1Mat[0:-4, 0:-4]
-    type(G)
-    
     # acl1Mat[752,:]
-    nx.diameter(G)
-    print("density is {den:.2f}%".format(den =nx.density(G)*100) )
+    degreeRes = nx.degree_histogram(G)
+
+    logger.info("density is {den:.2f}%".format(den =nx.density(G)*100) )
+    logger.info("degree is {deg}".format(deg=Counter(degreeRes)))
     
-    nx.degree_histogram(G)
-    len(nx.degree_histogram(G))
-    
-    d = nx.coloring.greedy_color(G, strategy="connected_sequential")
-    Counter(d.values())
+    color = nx.coloring.greedy_color(G, strategy="connected_sequential")
+    logger.info( "size: {colorSize} and list: {colorList}" .format( colorSize=Counter(color.values()), colorList = color ) )
+    logger.info("===================================")

@@ -1,0 +1,55 @@
+Start the main program
+************CutSplit: version 2.0 (add trace fuction)******************
+Bucket Size =  1
+Threshold = 24,24
+the number of rules = 9484
+Big_subset:283	Sa_subset:2911	Da_subset:6290
+
+
+ num_sa = 2911   num_da = 6290   num_big = 283 
+***SA Subset Tree(using FiCuts + HyperSlit):***
+>>RESULTS:
+>>number of rules:2911
+>>worst case tree level: 3
+>>worst case tree depth: 11
+>>total memory(Pre-Cutting): 3.007812(KB)
+>>total memory(Post_Splitting): 32.242188(KB)
+>>total memory (Pre-Cutting + Post_Splitting): 35.250000(KB)
+***SUCCESS in building 0-th CutSplit sub-tree(0_sa, 1_da)***
+
+***DA Subset Tree(using FiCuts + HyperSlit):***
+>>RESULTS:
+>>number of rules:6290
+>>worst case tree level: 3
+>>worst case tree depth: 9
+>>total memory(Pre-Cutting): 3.195312(KB)
+>>total memory(Post_Splitting): 71.710938(KB)
+>>total memory (Pre-Cutting + Post_Splitting): 74.906250(KB)
+***SUCCESS in building 1-th CutSplit sub-tree(0_sa, 1_da)***
+
+***Big rules(using HyperSlit):***
+>>RESULTS for bucket(1):
+>>number of rules: 283
+>>number of children: 11516
+>>worst case tree depth: 20
+>>average tree depth: 15.711792
+>>number of tree nodes:11515
+>>number of leaf nodes:11516
+>>total memory: 134.945312(KB)
+***SUCCESS in building HyperSplit sub-tree for big rules***
+
+***Big rules(using HyperSlit-New):***
+>>RESULTS for bucket(1):
+>>number of rules: 283
+>>number of children: 11516
+>>worst case tree depth: 20
+>>average tree depth: 15.711792
+>>number of tree nodes:11515
+>>number of leaf nodes:11516
+>>total memory: 134.945312(KB)
+***SUCCESS in building HyperSplit sub-tree for big rules***
+
+***Total preprocessing time: 245(ms)
+
+94840 packets are classified, 0 of them are misclassified
+

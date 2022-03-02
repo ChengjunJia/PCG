@@ -105,8 +105,7 @@ def analyzeRuleset(filename):
 def init():
     global logger
     logger = createLogger()
-    # ruleRootPath = os.path.join(".", "pc_plat", "rule_trace", "rules", "origin")
-    ruleRootPath = os.path.join(".", "rules")
+    ruleRootPath = os.path.join(".", "pc_plat", "rule_trace", "rules", "origin")
     g = os.walk(ruleRootPath)
     resMap = {}
     for path, dir_list, file_list in g:

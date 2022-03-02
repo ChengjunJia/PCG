@@ -1,0 +1,8 @@
+
+*.pyc
+*.zip
+PSA/rules/*
+CutSplit/rules/*
+CutSplit/trace/*
+CutSplit/mark_res/*
+CutSplit/rules/ipc1_1K
